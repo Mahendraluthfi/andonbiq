@@ -3,6 +3,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Push extends CI_Controller {
 
+	public function __construct()
+	{
+		parent::__construct();
+		date_default_timezone_set('Asia/Jakarta');
+	}
+
 	public function level4()
 	{
 		$chatid_sec_a = '-495415635';			
@@ -29,10 +35,13 @@ class Push extends CI_Controller {
 	public function countdown()
 	{
 		$timenow = date("H:i:s");
-		$get = $this->db->get_where('downtime', array('status' => 0))->row();
+		
+		$get_id = $this->db->query("SELECT MAX(id) as max_id FROM downtime WHERE status='0'")->row();
+		$get = $this->db->get_where('downtime', array('id'=> $get_id->max_id))->row();
+
 		$count = $this->dateDifference($timenow,$get->time_start);
 
-		$this->db->where('status', 0);
+		$this->db->where('id', $get->id);
 		$this->db->update('downtime', array(
 			'status' => '1',
 			'count' => $count,
@@ -41,19 +50,30 @@ class Push extends CI_Controller {
 
 		$chatid_val_stream = '-301363315';			
 		$pesan = "Downtime at defect level 5.\nLine 1\n".$count." minutes.\nThank You";
-		$this->telegram($chatid_val_stream,$pesan);
+		// $this->telegram($chatid_val_stream,$pesan);
 		echo json_encode($count);
 
 	}
 
 	function dateDifference($date_1 , $date_2 , $differenceFormat = '%i' )
 	{
-	    $datetime1 = date_create($date_1);
-	    $datetime2 = date_create($date_2);
+	    // $datetime1 = date_create($date_1);
+	    // $datetime2 = date_create($date_2);
 	   
-	    $interval = date_diff($datetime1, $datetime2);
+	    // $interval = date_diff($datetime1, $datetime2);
 	   
-	    return $interval->format($differenceFormat);
+	    // return $interval->format($differenceFormat);
+	    $waktu_awal     =strtotime($date_1);
+        $waktu_akhir    =strtotime($date_2); // bisa juga waktu sekarang now()
+        
+        //menghitung selisih dengan hasil detik
+        $diff    =$waktu_awal - $waktu_akhir;
+        
+        //membagi detik menjadi jam
+        $menit    =floor($diff / 60);
+        
+        //membagi sisa detik setelah dikurangi $jam menjadi menit
+        return $menit;
 	   
 	}
 
