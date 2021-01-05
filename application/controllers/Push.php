@@ -19,6 +19,9 @@ class Push extends CI_Controller {
 
 	public function level5()
 	{
+		$this->db->where('status', 0);
+		$this->db->delete('downtime');
+
 		$this->db->insert('downtime', array(
 			'line' => 'Line 1',
 			'time_start' => date('H:i:s'),
@@ -28,7 +31,7 @@ class Push extends CI_Controller {
 
 		$chatid_val_stream = '-301363315';			
 		$pesan = "Defect level 5 on Line 1.\nPlease support on this. Thank You";
-		$this->telegram($chatid_val_stream,$pesan);
+		// $this->telegram($chatid_val_stream,$pesan);
 		echo json_encode("TRUE");	
 	}
 
@@ -36,8 +39,7 @@ class Push extends CI_Controller {
 	{
 		$timenow = date("H:i:s");
 		
-		$get_id = $this->db->query("SELECT MAX(id) as max_id FROM downtime WHERE status='0'")->row();
-		$get = $this->db->get_where('downtime', array('id'=> $get_id->max_id))->row();
+		$get= $this->db->get_where('downtime', array('status' => 0))->row();
 
 		$count = $this->dateDifference($timenow,$get->time_start);
 
