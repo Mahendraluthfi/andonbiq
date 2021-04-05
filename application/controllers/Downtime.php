@@ -18,6 +18,26 @@ class Downtime extends CI_Controller {
 		$this->load->view('index', $data);		
 	}
 
+	public function ecosystem()
+	{
+		$this->db->from('dt_eco');
+		$this->db->join('line', 'dt_eco.id_line = line.id');
+		$db = $this->db->get()->result();
+		$data['get'] = $db;
+		$data['content'] = 'dt_eco';
+		$this->load->view('index', $data);
+	}
+
+	public function valuestream()
+	{
+		$this->db->from('dt_vsm');
+		$this->db->join('line', 'dt_vsm.id_line = line.id');
+		$db = $this->db->get()->result();
+		$data['get'] = $db;
+		$data['content'] = 'dt_vsm';
+		$this->load->view('index', $data);
+	}
+
 }
 
 /* End of file Downtime.php */
